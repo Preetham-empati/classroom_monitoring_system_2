@@ -1,0 +1,8 @@
+flask
+flask-sqlalchemy
+flask-login
+flask-bcrypt
+opencv-python
+mediapipe
+numpy
+scipy
