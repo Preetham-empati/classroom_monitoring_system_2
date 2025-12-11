@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h2>Live Classroom Monitor Stream</h2>
+    <p>The annotated video feed is streaming live from the server.</p>
+    <div style="border: 1px solid #333; background-color: #000; width: 800px; margin: auto;">
+        <img src="{{ url_for('video_feed') }}" width="800">
+    </div>
+{% endblock %}

@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome - Classroom Monitor</title>
+    <!-- We'll use the Boxicons library for icons -->
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <style>
+        :root {
+            --primary-color: #007BFF;
+            --primary-hover: #0056b3;
+            --text-light: #f4f7f6;
+        }
+        
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            height: 100%;
+            overflow: hidden; /* Prevents scrollbars from the video */
+        }
+        
+        #video-background {
+            position: fixed;
+            right: 0;
+            bottom: 0;
+            min-width: 100%;
+            min-height: 100%;
+            z-index: -2;
+            object-fit: cover; /* Ensures the video covers the screen */
+        }
+        
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6); /* Dark overlay for text readability */
+            z-index: -1;
+        }
+        
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            position: absolute;
+            width: calc(100% - 80px);
+            z-index: 1;
+        }
+        
+        .nav .logo {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: white;
+            text-decoration: none;
+        }
+        
+        .nav .nav-links a {
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            font-size: 1em;
+            font-weight: bold;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+        
+        .nav .nav-links a.btn-login {
+            border: 2px solid var(--primary-color);
+            margin-right: 10px;
+        }
+        .nav .nav-links a.btn-login:hover {
+            background-color: var(--primary-color);
+        }
+        
+        .nav .nav-links a.btn-register {
+            background-color: var(--primary-color);
+        }
+        .nav .nav-links a.btn-register:hover {
+            background-color: var(--primary-hover);
+        }
+        
+        .hero {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            text-align: center;
+            color: white;
+        }
+        
+        .hero-content {
+            animation: fadeIn 1.5s ease-out;
+        }
+        
+        .hero-content h1 {
+            font-size: 3.5em;
+            margin: 0;
+            letter-spacing: 1px;
+        }
+        
+        .hero-content p {
+            font-size: 1.2em;
+            margin: 20px 0 30px 0;
+            max-width: 600px;
+            line-height: 1.6;
+        }
+        
+        .hero-content .btn-cta {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 15px 30px;
+            font-size: 1.1em;
+            font-weight: bold;
+            text-decoration: none;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            animation: pulse 2s infinite;
+        }
+        
+        .hero-content .btn-cta:hover {
+            background-color: var(--primary-hover);
+            animation: none;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(0, 123, 255, 0.7); }
+            70% { box-shadow: 0 0 0 15px rgba(0, 123, 255, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(0, 123, 255, 0); }
+        }
+        
+    </style>
+</head>
+<body>
+
+    <!-- Video Background -->
+    <video autoplay muted loop id="video-background">
+        <!-- Using a placeholder video about technology/education. -->
+        <source src="https://assets.mixkit.co/videos/preview/mixkit-futuristic-animation-of-a-digital-brain-with-electric-charges-34300-large.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+    <div class="overlay"></div>
+
+    <!-- Navigation -->
+    <nav class="nav">
+        <a href="{{ url_for('welcome') }}" class="logo">Class Monitor</a>
+        <div class="nav-links">
+            <a href="{{ url_for('login') }}" class="btn-login">Log In</a>
+            <a href="{{ url_for('register') }}" class="btn-register">Register</a>
+        </div>
+    </nav>
+
+    <!-- Hero Content -->
+    <div class="hero">
+        <div class="hero-content">
+            <h1>Focus. Learn. Succeed.</h1>
+            <p>
+                Welcome to the future of classroom analytics. Our platform uses advanced AI 
+                to provide real-time insights into student attentiveness, helping educators 
+                create more engaging and effective learning environments.
+            </p>
+            <a href="{{ url_for('register') }}" class="btn-cta">Get Started for Free</a>
+        </div>
+    </div>
+
+</body>
+</html>

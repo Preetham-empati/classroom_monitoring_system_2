@@ -1,0 +1,319 @@
+{% extends "base.html" %}
+
+<!-- Set the page name and title for the base template -->
+{% set page_name = 'index' %}
+{% set page_title = 'Dashboard' %}
+
+{% block content %}
+
+    <!-- NEW: Dashboard-specific styles -->
+    <style>
+        .dashboard-grid {
+            display: grid;
+            /* 3-column layout, with the last column being narrower */
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+        
+        /* --- Main Content (Left and Middle) --- */
+        .main-column {
+            /* This column will span 2 of the 3 grid columns */
+            grid-column: span 2;
+        }
+        
+        /* --- Sidebar (Right) --- */
+        .sidebar-column {
+            /* This column will span 1 grid column */
+            grid-column: span 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .kpi-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+        .kpi-box {
+            background-color: var(--card-bg);
+            padding: 20px;
+            text-align: center;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+        }
+        .kpi-box h3 {
+            margin-top: 0;
+            font-size: 1.1em;
+            color: var(--text-muted);
+        }
+        .kpi-box p {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin: 10px 0 0 0;
+            color: var(--primary-color);
+        }
+        
+        .filter-form {
+            padding: 20px;
+        }
+        .form-group-inline {
+            display: inline-block;
+            margin-right: 15px;
+            margin-bottom: 10px;
+        }
+        .form-group-inline label {
+            margin-right: 5px;
+            font-weight: bold;
+        }
+        .form-group-inline input[type="date"] {
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+        }
+        .btn {
+            padding: 11px 20px;
+            vertical-align: middle;
+        }
+        .btn-secondary {
+             vertical-align: middle;
+        }
+
+        /* --- New Card Styles --- */
+        .card {
+            background: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+            padding: 25px;
+        }
+        
+        .card-header {
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .card-header h2, .card-header h3 {
+            margin: 0;
+            display: flex;
+            align-items: center;
+        }
+        
+        .card-header h3 i {
+            font-size: 1.2em;
+            margin-right: 10px;
+            color: var(--primary-color);
+        }
+        
+        /* Current Session Card */
+        .session-info p {
+            margin: 10px 0;
+            font-size: 1.1em;
+        }
+        .session-info strong {
+            color: var(--text-muted);
+            margin-right: 8px;
+            display: inline-block;
+            width: 80px;
+        }
+        .session-info .no-class {
+            font-style: italic;
+            color: var(--text-muted);
+        }
+        
+        /* Student Progress Card */
+        .student-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            max-height: 250px;
+            overflow-y: auto;
+        }
+        .student-list li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .student-list li:last-child {
+            border-bottom: none;
+        }
+        .student-list .student-name {
+            font-weight: bold;
+        }
+        .student-list .student-score {
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+        .student-list .score-high { color: #28a745; }
+        .student-list .score-mid { color: #ffc107; }
+        .student-list .score-low { color: #dc3545; }
+        
+        /* Responsive Grid */
+        @media (max-width: 1200px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr; /* Stack columns on smaller screens */
+            }
+            .main-column, .sidebar-column {
+                grid-column: span 1;
+            }
+        }
+        @media (max-width: 768px) {
+            .kpi-row {
+                grid-template-columns: 1fr; /* Stack KPIs on mobile */
+            }
+        }
+    </style>
+
+    <div class="dashboard-grid">
+    
+        <!-- Main Column (Filters, KPIs, Main Graphs) -->
+        <div class="main-column">
+            
+            <!-- Filter Card -->
+            <div class="card filter-form">
+                <form method="GET" action="{{ url_for('index') }}">
+                    <div class="form-group-inline">
+                        <label for="start_date">Start Date:</label>
+                        <input type="date" id="start_date" name="start_date" value="{{ request.args.get('start_date', '') }}">
+                    </div>
+                    <div class="form-group-inline">
+                        <label for="end_date">End Date:</label>
+                        <input type="date" id="end_date" name="end_date" value="{{ request.args.get('end_date', '') }}">
+                    </div>
+                    <button type="submit" class="btn">Filter</button>
+                    <a href="{{ url_for('index') }}" class="btn-secondary">Clear</a>
+                </form>
+                
+                <a href="{{ url_for('send_report', start_date=request.args.get('start_date', ''), end_date=request.args.get('end_date', '')) }}"
+                   class="btn btn-success" 
+                   style="margin-top: 10px;"
+                   onclick="return confirm('This will send a report to the teacher for the current hour. Are you sure?');">
+                   Send Report
+                </a>
+                
+                <a href="{{ url_for('clear_logs') }}"
+                   class="btn btn-danger" 
+                   style="margin-top: 10px;"
+                   onclick="return confirm('WARNING: This will permanently delete all attentiveness logs. Are you sure?');">
+                   Clear Session Logs
+                </a>
+            </div>
+
+            {% if totalStudents > 0 %}
+                <!-- KPI Row -->
+                <div class="kpi-row" style="margin-top: 20px;">
+                    <div class="kpi-box">
+                        <h3>Total Students</h3>
+                        <p>{{ totalStudents }}</p>
+                    </div>
+                    <div class="kpi-box">
+                        <h3>Class Average Score</h3>
+                        <p>{{ classAvg }}</p>
+                    </div>
+                    <div class="kpi-box">
+                        <h3>At-Risk Students</h3>
+                        <p>{{ atRiskCount }}</p>
+                    </div>
+                </div>
+                
+                <!-- Main Line Graph -->
+                <div class="card" style="margin-top: 20px;">
+                    <div class="card-header"><h3><i class='bx bx-line-chart'></i>Average Class Attentiveness</h3></div>
+                    <div id="lineGraph"></div>
+                </div>
+                
+                <!-- Main Box Plot -->
+                <div class="card" style="margin-top: 20px;">
+                    <div class="card-header"><h3><i class='bx bx-box'></i>Student Attentiveness Distribution</h3></div>
+                    <div id="boxPlot"></div>
+                </div>
+                
+            {% else %}
+                <!-- No Data Message -->
+                <div class="card" style="margin-top: 20px;">
+                    <h3>Welcome, {{ current_user.username }}!</h3>
+                    <p>No analytics data found for the selected period. Please run the <a href="{{ url_for('live_stream_page') }}">Live Stream</a> to begin collecting data, or clear your filters.</p>
+                </div>
+            {% endif %}
+        </div>
+        
+        <!-- Sidebar Column (New Stats) -->
+        <div class="sidebar-column">
+        
+            <!-- NEW: Current Session Card -->
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class='bx bx-time'></i>Current Session</h3>
+                </div>
+                <div class="session-info">
+                    {% if current_session %}
+                        <p><strong>Subject:</strong> {{ current_session.subject }}</p>
+                        <p><strong>Teacher:</strong> {{ current_session.teacher_name }}</p>
+                        <p><strong>Time:</strong> {{ current_session.hour_pretty }}</p>
+                    {% else %}
+                        <p class="no-class">No class scheduled for the current hour.</p>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- NEW: Student Progress Card -->
+            {% if student_progress %}
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class='bx bxs-user-detail'></i>Student Progress (Filtered)</h3>
+                </div>
+                <ul class="student-list">
+                    {% for student in student_progress %}
+                        {% set score_pc = student.score * 100 %}
+                        {% if score_pc >= 80 %}
+                            {% set score_class = 'score-high' %}
+                        {% elif score_pc >= 60 %}
+                            {% set score_class = 'score-mid' %}
+                        {% else %}
+                            {% set score_class = 'score-low' %}
+                        {% endif %}
+                        <li>
+                            <span class="student-name">{{ student.name }}</span>
+                            <span class="student-score {{ score_class }}">{{ "%.0f%%"|format(score_pc) }}</span>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+            
+            <!-- NEW: Status Pie Chart -->
+            {% if totalStudents > 0 %}
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class='bx bx-pie-chart-alt-2'></i>Overall Status Distribution</h3>
+                </div>
+                <div id="pieChart"></div>
+            </div>
+            {% endif %}
+            
+        </div>
+    
+    </div>
+
+    <!-- Plotly Scripts -->
+    {% if totalStudents > 0 %}
+    <script>
+        // Line Graph
+        var lineGraph = {{ graphJSON_line | safe }};
+        Plotly.newPlot('lineGraph', lineGraph.data, lineGraph.layout, {responsive: true});
+        
+        // Box Plot
+        var boxPlot = {{ graphJSON_box | safe }};
+        Plotly.newPlot('boxPlot', boxPlot.data, boxPlot.layout, {responsive: true});
+        
+        // NEW: Pie Chart
+        var pieChart = {{ graphJSON_pie | safe }};
+        Plotly.newPlot('pieChart', pieChart.data, pieChart.layout, {responsive: true});
+    </script>
+    {% endif %}
+
+{% endblock %}

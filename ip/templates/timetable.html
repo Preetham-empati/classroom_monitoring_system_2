@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% set page_name = 'timetable' %}
+{% set page_title = 'Class Timetable' %}
+
+{% block content %}
+    <div class="card">
+        <div class="card-header">
+            <h2>Manage Class Timetable</h2>
+        </div>
+        <p>Use this form to set the subject, teacher, and email for each class hour. You can update one hour at a time or all at once.</p>
+        
+        <form method="POST" action="{{ url_for('timetable') }}" class="timetable-form">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Hour</th>
+                        <th>Subject</th>
+                        <th>Teacher Name</th>
+                        <th>Teacher Email</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for entry in schedule %}
+                    <tr>
+                        <td>Hour {{ entry.hour }}</td>
+                        <td>
+                            <input type="text" 
+                                   name="subject_{{ entry.hour }}" 
+                                   value="{{ '' if entry.subject == 'Not Set' else entry.subject }}"
+                                   placeholder="e.g., Data Science">
+                        </td>
+                        <td>
+                            <input type="text" 
+                                   name="teacher_name_{{ entry.hour }}" 
+                                   value="{{ '' if entry.teacher_name == 'Not Set' else entry.teacher_name }}"
+                                   placeholder="e.g., Prof. Smith">
+                        </td>
+                        <td>
+                            <input type="email" 
+                                   name="teacher_email_{{ entry.hour }}" 
+                                   value="{{ '' if entry.teacher_email == 'Not Set' else entry.teacher_email }}"
+                                   placeholder="e.g., prof.smith@example.com">
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <br>
+            <button type="submit" class="btn">Save Timetable</button>
+        </form>
+    </div>
+
+    <style>
+        .timetable-form input {
+            width: 95%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+    </style>
+{% endblock %}

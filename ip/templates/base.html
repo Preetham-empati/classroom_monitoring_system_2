@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Classroom Monitor</title>
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    
+    <style>
+        :root {
+            --primary-color: #007BFF; /* Original blue */
+            --primary-hover: #0056b3;
+            --sidebar-bg: #ffffff;
+            --body-bg: #f4f7f6; /* Light gray background */
+            --card-bg: #ffffff;
+            --text-color: #333;
+            --text-muted: #6c757d;
+            --border-color: #e0e0e0;
+            --shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--body-bg);
+            color: var(--text-color);
+            display: flex;
+        }
+
+        /* --- Sidebar Navigation --- */
+        .sidebar {
+            width: 260px;
+            background: var(--sidebar-bg);
+            border-right: 1px solid var(--border-color);
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            display: flex;
+            flex-direction: column;
+            box-shadow: var(--shadow);
+            z-index: 100;
+        }
+        
+        .sidebar-header {
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .sidebar-header h2 {
+            margin: 0;
+            color: var(--primary-color);
+            font-size: 1.5em;
+        }
+        
+        .sidebar-nav {
+            list-style: none;
+            padding: 20px 0;
+            margin: 0;
+            flex-grow: 1;
+        }
+        
+        .sidebar-nav li {
+            margin: 0 15px;
+        }
+        
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            text-decoration: none;
+            color: var(--text-muted);
+            border-radius: 8px;
+            margin-bottom: 5px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .sidebar-nav a i {
+            font-size: 1.4em;
+            margin-right: 15px;
+            width: 20px;
+            text-align: center;
+        }
+        
+        .sidebar-nav a:hover,
+        .sidebar-nav a.active {
+            background-color: #e6f2ff;
+            color: var(--primary-color);
+        }
+        
+        .sidebar-logout {
+            padding: 20px;
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .sidebar-logout a {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            text-decoration: none;
+            color: #dc3545; /* Red for logout */
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        .sidebar-logout a:hover {
+            background-color: #f8d7da;
+        }
+        .sidebar-logout a i {
+            font-size: 1.4em;
+            margin-right: 15px;
+        }
+
+        /* --- Main Content Area --- */
+        .main-content {
+            margin-left: 260px; /* Same as sidebar width */
+            padding: 20px;
+            width: calc(100% - 260px);
+        }
+        
+        .top-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            margin-bottom: 20px;
+        }
+        
+        .top-header h1 {
+            margin: 0;
+            font-size: 1.8em;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            font-weight: bold;
+        }
+        
+        .user-info i {
+            font-size: 1.5em;
+            margin-right: 10px;
+            color: var(--primary-color);
+        }
+
+        .container {
+            padding: 0; /* Container is now just a wrapper */
+        }
+        
+        /* --- Flash Messages --- */
+        .flash {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+        .flash.success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .flash.danger { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .flash.info { background-color: #d1ecf1; color: #0c5464; border: 1px solid #bee5eb; }
+        
+        /* --- Card Style --- */
+        .card {
+            background: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+        
+        .card-header {
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .card-header h2, .card-header h3 {
+            margin: 0;
+        }
+        
+        /* --- Form & Button Styles (Modern) --- */
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: bold; }
+        .form-group input, .form-group-inline input {
+            width: 100%;
+            padding: 12px;
+            box-sizing: border-box;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 1em;
+        }
+        
+        .btn {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 1em;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+        .btn:hover { background-color: var(--primary-hover); }
+        
+        .btn-secondary {
+            background-color: #6c757d;
+        }
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+        .btn-success {
+            background-color: #28a745;
+        }
+        .btn-success:hover {
+            background-color: #218838;
+        }
+        .btn-danger {
+            background-color: #dc3545;
+        }
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+        
+        /* Table Styles */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid var(--border-color);
+            padding: 12px 15px;
+            text-align: left;
+        }
+        th {
+            background-color: #f9f9f9;
+        }
+        tbody tr:nth-child(even) {
+            background-color: #fcfcfc;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h2>Class Monitor</h2>
+        </div>
+        <ul class="sidebar-nav">
+            {% set page_name = page_name|default('home') %}
+            
+            <li><a href="{{ url_for('index') }}" class="{{ 'active' if page_name == 'index' }}">
+                <i class='bx bxs-dashboard'></i> Dashboard
+            </a></li>
+            
+            <li><a href="{{ url_for('live_stream_page') }}" class="{{ 'active' if page_name == 'live_stream' }}">
+                <i class='bx bxs-video'></i> Live Stream
+            </a></li>
+            
+            <li><a href="{{ url_for('timetable') }}" class="{{ 'active' if page_name == 'timetable' }}">
+                <i class='bx bxs-calendar'></i> Timetable
+            </a></li>
+        </ul>
+        <div class="sidebar-logout">
+            <a href="{{ url_for('logout') }}">
+                <i class='bx bx-log-out'></i> Logout
+            </a>
+        </div>
+    </div>
+
+    <div class="main-content">
+        
+        <header class="top-header">
+            <h1>{{ page_title|default('Welcome') }}</h1>
+            <div class="user-info">
+                <i class='bx bxs-user-circle'></i>
+                <span>{{ current_user.username }}</span>
+            </div>
+        </header>
+
+        <div class="container">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="flash {{ category }}">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+    
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+</body>
+</html>

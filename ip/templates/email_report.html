@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Class Attentiveness Report</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+    </style>
+</head>
+<body>
+    <p>Hello {{ teacher_name }},</p>
+    
+    <p>Here is the student attentiveness report for your <strong>{{ subject }}</strong> class on {{ report_date }}.</p>
+    
+    <h3>Key Statistics</h3>
+    <ul>
+        <li><strong>Class Average:</strong> {{ class_avg }}</li>
+        <li><strong>Total "At-Risk" Students:</strong> {{ at_risk_count }}</li>
+    </ul>
+
+    <h3>At-Risk Student Details</h3>
+    <p>The following students had an average score below 60% during this session.</p>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Student Name</th>
+                <th>Average Score</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for student in at_risk_list %}
+            <tr>
+                <td>{{ student.name }}</td>
+                <td>{{ "%.1f%%"|format(student.score * 100) }}</td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="2">No students were flagged as "at-risk" during this session. Great job!</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <br>
+    <p>Best regards,<br>Classroom Monitor System</p>
+</body>
+</html>
